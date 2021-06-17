@@ -10,10 +10,16 @@ type Which int
 const (
 	Top Which = iota
 
+	Package_Files
+
+	File_Doc
 	File_Name
 	File_Decls
 	File_Imports
 	File_Unresolved
+	File_Comments
+
+	CommentGroup_List
 
 	Ellipsis_Elt
 	FuncLit_Type
@@ -50,8 +56,12 @@ const (
 	ChanType_Value
 
 	FieldList_List
+
+	Field_Doc
 	Field_Names
 	Field_Type
+	Field_Tag
+	Field_Comment
 
 	DeclStmt_Decl
 	LabeledStmt_Label
@@ -91,18 +101,30 @@ const (
 	RangeStmt_X
 	RangeStmt_Body
 
+	GenDecl_Doc
 	GenDecl_Specs
+
+	FuncDecl_Doc
 	FuncDecl_Recv
 	FuncDecl_Name
 	FuncDecl_Type
 	FuncDecl_Body
 
+	ImportSpec_Doc
 	ImportSpec_Name
+	ImportSpec_Path
+	ImportSpec_Comment
+
+	ValueSpec_Doc
 	ValueSpec_Names
 	ValueSpec_Type
 	ValueSpec_Values
+	ValueSpec_Comment
+
+	TypeSpec_Doc
 	TypeSpec_Name
 	TypeSpec_Type
+	TypeSpec_Comment
 )
 
 type StackItem struct {
@@ -114,7 +136,10 @@ type StackItem struct {
 type Visitor struct {
 	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool) error
 
-	File func(file *ast.File, which Which, index int, stack []StackItem, pre bool) error
+	Package func(pkg *ast.Package, which Which, index int, stack []StackItem, pre bool) error
+	File    func(file *ast.File, which Which, index int, stack []StackItem, pre bool) error
+
+	Filename string
 
 	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool) error
 	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool) error
@@ -143,6 +168,9 @@ type Visitor struct {
 	InterfaceType  func(interfaceType *ast.InterfaceType, which Which, index int, stack []StackItem, pre bool) error
 	MapType        func(mapType *ast.MapType, which Which, index int, stack []StackItem, pre bool) error
 	ChanType       func(chanType *ast.ChanType, which Which, index int, stack []StackItem, pre bool) error
+
+	Comment      func(comment *ast.Comment, which Which, index int, stack []StackItem, pre bool) error
+	CommentGroup func(commentGroup *ast.CommentGroup, which Which, index int, stack []StackItem, pre bool) error
 
 	FieldList func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool) error
 	Field     func(field *ast.Field, which Which, index int, stack []StackItem, pre bool) error

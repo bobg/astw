@@ -3,9 +3,47 @@ package astw
 import (
 	"fmt"
 	"go/ast"
+	"sort"
 
 	"github.com/pkg/errors"
 )
+
+func (v *Visitor) VisitPackage(n *ast.Package, which Which, index int, stack []StackItem) (err error) {
+	if n == nil {
+		return nil
+	}
+
+	if f := v.Package; f != nil {
+		err = f(n, which, index, stack, true)
+		if err != nil {
+			return errors.Wrap(err, "in Package (pre)")
+		}
+		defer func() {
+			if err == nil {
+				err = f(n, which, index, stack, false)
+				err = errors.Wrap(err, "in Package (post)")
+			}
+		}()
+	}
+
+	stack2 := append(stack, StackItem{N: n, W: which, I: index})
+
+	var filenames []string
+	for filename := range n.Files {
+		filenames = append(filenames, filename)
+	}
+	sort.Strings(filenames)
+
+	for i, filename := range filenames {
+		v.Filename = filename
+		err = v.VisitFile(n.Files[filename], Package_Files, i, stack2)
+		if err != nil {
+			return err
+		}
+	}
+
+	return
+}
 
 func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
@@ -26,6 +64,11 @@ func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackIt
 	}
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
+
+	err = v.VisitCommentGroup(n.Doc, File_Doc, 0, stack2)
+	if err != nil {
+		return err
+	}
 
 	err = v.VisitIdent(n.Name, File_Name, 0, stack2)
 	if err != nil {
@@ -48,6 +91,13 @@ func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackIt
 
 	for i, ident := range n.Unresolved {
 		err = v.VisitIdent(ident, File_Unresolved, i, stack2)
+		if err != nil {
+			return err
+		}
+	}
+
+	for i, comment := range n.Comments {
+		err = v.VisitCommentGroup(comment, File_Comments, i, stack2)
 		if err != nil {
 			return err
 		}

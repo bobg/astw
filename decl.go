@@ -47,6 +47,11 @@ func (v *Visitor) VisitGenDecl(n *ast.GenDecl, which Which, index int, stack []S
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
+	err = v.VisitCommentGroup(n.Doc, GenDecl_Doc, 0, stack2)
+	if err != nil {
+		return err
+	}
+
 	for i, spec := range n.Specs {
 		err = v.VisitSpec(spec, GenDecl_Specs, i, stack2)
 		if err != nil {
@@ -76,6 +81,11 @@ func (v *Visitor) VisitFuncDecl(n *ast.FuncDecl, which Which, index int, stack [
 	}
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
+
+	err = v.VisitCommentGroup(n.Doc, FuncDecl_Doc, 0, stack2)
+	if err != nil {
+		return err
+	}
 
 	err = v.VisitFieldList(n.Recv, FuncDecl_Recv, 0, stack2)
 	if err != nil {

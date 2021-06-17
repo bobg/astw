@@ -56,6 +56,11 @@ func (v *Visitor) VisitField(n *ast.Field, which Which, index int, stack []Stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
+	err = v.VisitCommentGroup(n.Doc, Field_Doc, 0, stack2)
+	if err != nil {
+		return err
+	}
+
 	for i, ident := range n.Names {
 		err = v.VisitIdent(ident, Field_Names, i, stack2)
 		if err != nil {
@@ -64,6 +69,16 @@ func (v *Visitor) VisitField(n *ast.Field, which Which, index int, stack []Stack
 	}
 
 	err = v.VisitExpr(n.Type, Field_Type, 0, stack2)
+	if err != nil {
+		return err
+	}
+
+	err = v.VisitBasicLit(n.Tag, Field_Tag, 0, stack2)
+	if err != nil {
+		return err
+	}
+
+	err = v.VisitCommentGroup(n.Comment, Field_Comment, 0, stack2)
 
 	return
 }
