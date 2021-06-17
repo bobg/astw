@@ -12,15 +12,13 @@ func (v *Visitor) VisitBadDecl(n *ast.BadDecl, which Which, index int, stack []S
 	}
 
 	if f := v.BadDecl; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BadDecl (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BadDecl (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BadDecl (post)")
 		}()
 	}
 
@@ -33,15 +31,13 @@ func (v *Visitor) VisitGenDecl(n *ast.GenDecl, which Which, index int, stack []S
 	}
 
 	if f := v.GenDecl; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in GenDecl (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in GenDecl (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in GenDecl (post)")
 		}()
 	}
 
@@ -68,15 +64,13 @@ func (v *Visitor) VisitFuncDecl(n *ast.FuncDecl, which Which, index int, stack [
 	}
 
 	if f := v.FuncDecl; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in FuncDecl (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in FuncDecl (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in FuncDecl (post)")
 		}()
 	}
 

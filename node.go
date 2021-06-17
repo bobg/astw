@@ -14,15 +14,13 @@ func (v *Visitor) VisitPackage(n *ast.Package, which Which, index int, stack []S
 	}
 
 	if f := v.Package; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Package (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Package (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Package (post)")
 		}()
 	}
 
@@ -51,15 +49,13 @@ func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackIt
 	}
 
 	if f := v.File; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in File (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in File (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in File (post)")
 		}()
 	}
 
@@ -112,15 +108,13 @@ func (v *Visitor) VisitNode(n ast.Node, which Which, index int, stack []StackIte
 	}
 
 	if f := v.Node; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Node (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Node (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Node (post)")
 		}()
 	}
 
@@ -150,15 +144,13 @@ func (v *Visitor) VisitExpr(n ast.Expr, which Which, index int, stack []StackIte
 	}
 
 	if f := v.Expr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Expr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Expr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Expr (post)")
 		}()
 	}
 
@@ -220,15 +212,13 @@ func (v *Visitor) VisitStmt(n ast.Stmt, which Which, index int, stack []StackIte
 	}
 
 	if f := v.Stmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Stmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Stmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Stmt (post)")
 		}()
 	}
 
@@ -288,15 +278,13 @@ func (v *Visitor) VisitDecl(n ast.Decl, which Which, index int, stack []StackIte
 	}
 
 	if f := v.Decl; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Decl (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Decl (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Decl (post)")
 		}()
 	}
 
@@ -320,15 +308,13 @@ func (v *Visitor) VisitSpec(n ast.Spec, which Which, index int, stack []StackIte
 	}
 
 	if f := v.Spec; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Spec (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Spec (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Spec (post)")
 		}()
 	}
 

@@ -12,15 +12,13 @@ func (v *Visitor) VisitCommentGroup(n *ast.CommentGroup, which Which, index int,
 	}
 
 	if f := v.CommentGroup; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in CommentGroup (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in CommentGroup (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in CommentGroup (post)")
 		}()
 	}
 
@@ -42,15 +40,13 @@ func (v *Visitor) VisitComment(n *ast.Comment, which Which, index int, stack []S
 	}
 
 	if f := v.Comment; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Comment (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Comment (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Comment (post)")
 		}()
 	}
 

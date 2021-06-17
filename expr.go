@@ -12,15 +12,13 @@ func (v *Visitor) VisitBadExpr(n *ast.BadExpr, which Which, index int, stack []S
 	}
 
 	if f := v.BadExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BadExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BadExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BadExpr (post)")
 		}()
 	}
 
@@ -33,15 +31,13 @@ func (v *Visitor) VisitIdent(n *ast.Ident, which Which, index int, stack []Stack
 	}
 
 	if f := v.Ident; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Ident (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Ident (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Ident (post)")
 		}()
 	}
 
@@ -54,15 +50,13 @@ func (v *Visitor) VisitEllipsis(n *ast.Ellipsis, which Which, index int, stack [
 	}
 
 	if f := v.Ellipsis; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in Ellipsis (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in Ellipsis (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in Ellipsis (post)")
 		}()
 	}
 
@@ -82,15 +76,13 @@ func (v *Visitor) VisitBasicLit(n *ast.BasicLit, which Which, index int, stack [
 	}
 
 	if f := v.BasicLit; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BasicLit (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BasicLit (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BasicLit (post)")
 		}()
 	}
 
@@ -103,15 +95,13 @@ func (v *Visitor) VisitFuncLit(n *ast.FuncLit, which Which, index int, stack []S
 	}
 
 	if f := v.FuncLit; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in FuncLit (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in FuncLit (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in FuncLit (post)")
 		}()
 	}
 
@@ -133,15 +123,13 @@ func (v *Visitor) VisitCompositeLit(n *ast.CompositeLit, which Which, index int,
 	}
 
 	if f := v.CompositeLit; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in CompositeLit (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in CompositeLit (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in CompositeLit (post)")
 		}()
 	}
 
@@ -168,15 +156,13 @@ func (v *Visitor) VisitParenExpr(n *ast.ParenExpr, which Which, index int, stack
 	}
 
 	if f := v.ParenExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ParenExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ParenExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ParenExpr (post)")
 		}()
 	}
 
@@ -193,15 +179,13 @@ func (v *Visitor) VisitSelectorExpr(n *ast.SelectorExpr, which Which, index int,
 	}
 
 	if f := v.SelectorExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in SelectorExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in SelectorExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in SelectorExpr (post)")
 		}()
 	}
 
@@ -223,15 +207,13 @@ func (v *Visitor) VisitIndexExpr(n *ast.IndexExpr, which Which, index int, stack
 	}
 
 	if f := v.IndexExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in IndexExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in IndexExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in IndexExpr (post)")
 		}()
 	}
 
@@ -253,15 +235,13 @@ func (v *Visitor) VisitSliceExpr(n *ast.SliceExpr, which Which, index int, stack
 	}
 
 	if f := v.SliceExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in SliceExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in SliceExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in SliceExpr (post)")
 		}()
 	}
 
@@ -296,15 +276,13 @@ func (v *Visitor) VisitTypeAssertExpr(n *ast.TypeAssertExpr, which Which, index 
 	}
 
 	if f := v.TypeAssertExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in TypeAssertExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in TypeAssertExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in TypeAssertExpr (post)")
 		}()
 	}
 
@@ -326,15 +304,13 @@ func (v *Visitor) VisitCallExpr(n *ast.CallExpr, which Which, index int, stack [
 	}
 
 	if f := v.CallExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in CallExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in CallExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in CallExpr (post)")
 		}()
 	}
 
@@ -361,15 +337,13 @@ func (v *Visitor) VisitStarExpr(n *ast.StarExpr, which Which, index int, stack [
 	}
 
 	if f := v.StarExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in StarExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in StarExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in StarExpr (post)")
 		}()
 	}
 
@@ -386,15 +360,13 @@ func (v *Visitor) VisitUnaryExpr(n *ast.UnaryExpr, which Which, index int, stack
 	}
 
 	if f := v.UnaryExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in UnaryExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in UnaryExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in UnaryExpr (post)")
 		}()
 	}
 
@@ -411,15 +383,13 @@ func (v *Visitor) VisitBinaryExpr(n *ast.BinaryExpr, which Which, index int, sta
 	}
 
 	if f := v.BinaryExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BinaryExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BinaryExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BinaryExpr (post)")
 		}()
 	}
 
@@ -441,15 +411,13 @@ func (v *Visitor) VisitKeyValueExpr(n *ast.KeyValueExpr, which Which, index int,
 	}
 
 	if f := v.KeyValueExpr; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in KeyValueExpr (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in KeyValueExpr (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in KeyValueExpr (post)")
 		}()
 	}
 
@@ -471,15 +439,13 @@ func (v *Visitor) VisitArrayType(n *ast.ArrayType, which Which, index int, stack
 	}
 
 	if f := v.ArrayType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ArrayType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ArrayType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ArrayType (post)")
 		}()
 	}
 
@@ -501,15 +467,13 @@ func (v *Visitor) VisitStructType(n *ast.StructType, which Which, index int, sta
 	}
 
 	if f := v.StructType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in StructType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in StructType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in StructType (post)")
 		}()
 	}
 
@@ -526,15 +490,13 @@ func (v *Visitor) VisitFuncType(n *ast.FuncType, which Which, index int, stack [
 	}
 
 	if f := v.FuncType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in FuncType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in FuncType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in FuncType (post)")
 		}()
 	}
 
@@ -556,15 +518,13 @@ func (v *Visitor) VisitInterfaceType(n *ast.InterfaceType, which Which, index in
 	}
 
 	if f := v.InterfaceType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in InterfaceType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in InterfaceType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in InterfaceType (post)")
 		}()
 	}
 
@@ -581,15 +541,13 @@ func (v *Visitor) VisitMapType(n *ast.MapType, which Which, index int, stack []S
 	}
 
 	if f := v.MapType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in MapType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in MapType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in MapType (post)")
 		}()
 	}
 
@@ -611,15 +569,13 @@ func (v *Visitor) VisitChanType(n *ast.ChanType, which Which, index int, stack [
 	}
 
 	if f := v.ChanType; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ChanType (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ChanType (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ChanType (post)")
 		}()
 	}
 

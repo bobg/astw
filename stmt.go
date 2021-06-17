@@ -12,15 +12,13 @@ func (v *Visitor) VisitBadStmt(n *ast.BadStmt, which Which, index int, stack []S
 	}
 
 	if f := v.BadStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BadStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BadStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BadStmt (post)")
 		}()
 	}
 
@@ -33,15 +31,13 @@ func (v *Visitor) VisitDeclStmt(n *ast.DeclStmt, which Which, index int, stack [
 	}
 
 	if f := v.DeclStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in DeclStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in DeclStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in DeclStmt (post)")
 		}()
 	}
 
@@ -58,15 +54,13 @@ func (v *Visitor) VisitEmptyStmt(n *ast.EmptyStmt, which Which, index int, stack
 	}
 
 	if f := v.EmptyStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in EmptyStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in EmptyStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in EmptyStmt (post)")
 		}()
 	}
 
@@ -79,15 +73,13 @@ func (v *Visitor) VisitLabeledStmt(n *ast.LabeledStmt, which Which, index int, s
 	}
 
 	if f := v.LabeledStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in LabeledStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in LabeledStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in LabeledStmt (post)")
 		}()
 	}
 
@@ -109,15 +101,13 @@ func (v *Visitor) VisitExprStmt(n *ast.ExprStmt, which Which, index int, stack [
 	}
 
 	if f := v.ExprStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ExprStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ExprStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ExprStmt (post)")
 		}()
 	}
 
@@ -134,15 +124,13 @@ func (v *Visitor) VisitSendStmt(n *ast.SendStmt, which Which, index int, stack [
 	}
 
 	if f := v.SendStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in SendStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in SendStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in SendStmt (post)")
 		}()
 	}
 
@@ -164,15 +152,13 @@ func (v *Visitor) VisitIncDecStmt(n *ast.IncDecStmt, which Which, index int, sta
 	}
 
 	if f := v.IncDecStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in IncDecStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in IncDecStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in IncDecStmt (post)")
 		}()
 	}
 
@@ -189,15 +175,13 @@ func (v *Visitor) VisitAssignStmt(n *ast.AssignStmt, which Which, index int, sta
 	}
 
 	if f := v.AssignStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in AssignStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in AssignStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in AssignStmt (post)")
 		}()
 	}
 
@@ -226,15 +210,13 @@ func (v *Visitor) VisitGoStmt(n *ast.GoStmt, which Which, index int, stack []Sta
 	}
 
 	if f := v.GoStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in GoStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in GoStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in GoStmt (post)")
 		}()
 	}
 
@@ -251,15 +233,13 @@ func (v *Visitor) VisitDeferStmt(n *ast.DeferStmt, which Which, index int, stack
 	}
 
 	if f := v.DeferStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in DeferStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in DeferStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in DeferStmt (post)")
 		}()
 	}
 
@@ -276,15 +256,13 @@ func (v *Visitor) VisitReturnStmt(n *ast.ReturnStmt, which Which, index int, sta
 	}
 
 	if f := v.ReturnStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ReturnStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ReturnStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ReturnStmt (post)")
 		}()
 	}
 
@@ -306,15 +284,13 @@ func (v *Visitor) VisitBranchStmt(n *ast.BranchStmt, which Which, index int, sta
 	}
 
 	if f := v.BranchStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BranchStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BranchStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BranchStmt (post)")
 		}()
 	}
 
@@ -331,15 +307,13 @@ func (v *Visitor) VisitBlockStmt(n *ast.BlockStmt, which Which, index int, stack
 	}
 
 	if f := v.BlockStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in BlockStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in BlockStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in BlockStmt (post)")
 		}()
 	}
 
@@ -361,15 +335,13 @@ func (v *Visitor) VisitIfStmt(n *ast.IfStmt, which Which, index int, stack []Sta
 	}
 
 	if f := v.IfStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in IfStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in IfStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in IfStmt (post)")
 		}()
 	}
 
@@ -401,15 +373,13 @@ func (v *Visitor) VisitCaseClause(n *ast.CaseClause, which Which, index int, sta
 	}
 
 	if f := v.CaseClause; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in CaseClause (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in CaseClause (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in CaseClause (post)")
 		}()
 	}
 
@@ -438,15 +408,13 @@ func (v *Visitor) VisitSwitchStmt(n *ast.SwitchStmt, which Which, index int, sta
 	}
 
 	if f := v.SwitchStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in SwitchStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in SwitchStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in SwitchStmt (post)")
 		}()
 	}
 
@@ -476,15 +444,13 @@ func (v *Visitor) VisitTypeSwitchStmt(n *ast.TypeSwitchStmt, which Which, index 
 	}
 
 	if f := v.TypeSwitchStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in TypeSwitchStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in TypeSwitchStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in TypeSwitchStmt (post)")
 		}()
 	}
 
@@ -511,15 +477,13 @@ func (v *Visitor) VisitCommClause(n *ast.CommClause, which Which, index int, sta
 	}
 
 	if f := v.CommClause; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in CommClause (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in CommClause (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in CommClause (post)")
 		}()
 	}
 
@@ -546,15 +510,13 @@ func (v *Visitor) VisitSelectStmt(n *ast.SelectStmt, which Which, index int, sta
 	}
 
 	if f := v.SelectStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in SelectStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in SelectStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in SelectStmt (post)")
 		}()
 	}
 
@@ -571,15 +533,13 @@ func (v *Visitor) VisitForStmt(n *ast.ForStmt, which Which, index int, stack []S
 	}
 
 	if f := v.ForStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ForStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ForStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ForStmt (post)")
 		}()
 	}
 
@@ -611,15 +571,13 @@ func (v *Visitor) VisitRangeStmt(n *ast.RangeStmt, which Which, index int, stack
 	}
 
 	if f := v.RangeStmt; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in RangeStmt (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in RangeStmt (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in RangeStmt (post)")
 		}()
 	}
 

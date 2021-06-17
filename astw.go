@@ -134,76 +134,76 @@ type StackItem struct {
 }
 
 type Visitor struct {
-	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool) error
+	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	Package func(pkg *ast.Package, which Which, index int, stack []StackItem, pre bool) error
-	File    func(file *ast.File, which Which, index int, stack []StackItem, pre bool) error
+	Package func(pkg *ast.Package, which Which, index int, stack []StackItem, pre bool, err error) error
+	File    func(file *ast.File, which Which, index int, stack []StackItem, pre bool, err error) error
 
 	Filename string
 
-	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool) error
-	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool) error
-	Decl func(decl ast.Decl, which Which, index int, stack []StackItem, pre bool) error
-	Spec func(spec ast.Spec, which Which, index int, stack []StackItem, pre bool) error
+	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool, err error) error
+	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	Decl func(decl ast.Decl, which Which, index int, stack []StackItem, pre bool, err error) error
+	Spec func(spec ast.Spec, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	BadExpr        func(badExpr *ast.BadExpr, which Which, index int, stack []StackItem, pre bool) error
-	Ident          func(ident *ast.Ident, which Which, index int, stack []StackItem, pre bool) error
-	Ellipsis       func(ellipsis *ast.Ellipsis, which Which, index int, stack []StackItem, pre bool) error
-	BasicLit       func(basicLit *ast.BasicLit, which Which, index int, stack []StackItem, pre bool) error
-	FuncLit        func(funcLit *ast.FuncLit, which Which, index int, stack []StackItem, pre bool) error
-	CompositeLit   func(compositeLit *ast.CompositeLit, which Which, index int, stack []StackItem, pre bool) error
-	ParenExpr      func(parenExpr *ast.ParenExpr, which Which, index int, stack []StackItem, pre bool) error
-	SelectorExpr   func(selectorExpr *ast.SelectorExpr, which Which, index int, stack []StackItem, pre bool) error
-	IndexExpr      func(indexExpr *ast.IndexExpr, which Which, index int, stack []StackItem, pre bool) error
-	SliceExpr      func(sliceExpr *ast.SliceExpr, which Which, index int, stack []StackItem, pre bool) error
-	TypeAssertExpr func(typeAssertExpr *ast.TypeAssertExpr, which Which, index int, stack []StackItem, pre bool) error
-	CallExpr       func(callExpr *ast.CallExpr, which Which, index int, stack []StackItem, pre bool) error
-	StarExpr       func(starExpr *ast.StarExpr, which Which, index int, stack []StackItem, pre bool) error
-	UnaryExpr      func(unaryExpr *ast.UnaryExpr, which Which, index int, stack []StackItem, pre bool) error
-	BinaryExpr     func(binaryExpr *ast.BinaryExpr, which Which, index int, stack []StackItem, pre bool) error
-	KeyValueExpr   func(keyValueExpr *ast.KeyValueExpr, which Which, index int, stack []StackItem, pre bool) error
-	ArrayType      func(arrayType *ast.ArrayType, which Which, index int, stack []StackItem, pre bool) error
-	StructType     func(structType *ast.StructType, which Which, index int, stack []StackItem, pre bool) error
-	FuncType       func(funcType *ast.FuncType, which Which, index int, stack []StackItem, pre bool) error
-	InterfaceType  func(interfaceType *ast.InterfaceType, which Which, index int, stack []StackItem, pre bool) error
-	MapType        func(mapType *ast.MapType, which Which, index int, stack []StackItem, pre bool) error
-	ChanType       func(chanType *ast.ChanType, which Which, index int, stack []StackItem, pre bool) error
+	BadExpr        func(badExpr *ast.BadExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	Ident          func(ident *ast.Ident, which Which, index int, stack []StackItem, pre bool, err error) error
+	Ellipsis       func(ellipsis *ast.Ellipsis, which Which, index int, stack []StackItem, pre bool, err error) error
+	BasicLit       func(basicLit *ast.BasicLit, which Which, index int, stack []StackItem, pre bool, err error) error
+	FuncLit        func(funcLit *ast.FuncLit, which Which, index int, stack []StackItem, pre bool, err error) error
+	CompositeLit   func(compositeLit *ast.CompositeLit, which Which, index int, stack []StackItem, pre bool, err error) error
+	ParenExpr      func(parenExpr *ast.ParenExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	SelectorExpr   func(selectorExpr *ast.SelectorExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	IndexExpr      func(indexExpr *ast.IndexExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	SliceExpr      func(sliceExpr *ast.SliceExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	TypeAssertExpr func(typeAssertExpr *ast.TypeAssertExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	CallExpr       func(callExpr *ast.CallExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	StarExpr       func(starExpr *ast.StarExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	UnaryExpr      func(unaryExpr *ast.UnaryExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	BinaryExpr     func(binaryExpr *ast.BinaryExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	KeyValueExpr   func(keyValueExpr *ast.KeyValueExpr, which Which, index int, stack []StackItem, pre bool, err error) error
+	ArrayType      func(arrayType *ast.ArrayType, which Which, index int, stack []StackItem, pre bool, err error) error
+	StructType     func(structType *ast.StructType, which Which, index int, stack []StackItem, pre bool, err error) error
+	FuncType       func(funcType *ast.FuncType, which Which, index int, stack []StackItem, pre bool, err error) error
+	InterfaceType  func(interfaceType *ast.InterfaceType, which Which, index int, stack []StackItem, pre bool, err error) error
+	MapType        func(mapType *ast.MapType, which Which, index int, stack []StackItem, pre bool, err error) error
+	ChanType       func(chanType *ast.ChanType, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	Comment      func(comment *ast.Comment, which Which, index int, stack []StackItem, pre bool) error
-	CommentGroup func(commentGroup *ast.CommentGroup, which Which, index int, stack []StackItem, pre bool) error
+	Comment      func(comment *ast.Comment, which Which, index int, stack []StackItem, pre bool, err error) error
+	CommentGroup func(commentGroup *ast.CommentGroup, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	FieldList func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool) error
-	Field     func(field *ast.Field, which Which, index int, stack []StackItem, pre bool) error
+	FieldList func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool, err error) error
+	Field     func(field *ast.Field, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	BadStmt        func(badStmt *ast.BadStmt, which Which, index int, stack []StackItem, pre bool) error
-	DeclStmt       func(declStmt *ast.DeclStmt, which Which, index int, stack []StackItem, pre bool) error
-	EmptyStmt      func(emptyStmt *ast.EmptyStmt, which Which, index int, stack []StackItem, pre bool) error
-	LabeledStmt    func(labeledStmt *ast.LabeledStmt, which Which, index int, stack []StackItem, pre bool) error
-	ExprStmt       func(exprStmt *ast.ExprStmt, which Which, index int, stack []StackItem, pre bool) error
-	SendStmt       func(sendStmt *ast.SendStmt, which Which, index int, stack []StackItem, pre bool) error
-	IncDecStmt     func(incDecStmt *ast.IncDecStmt, which Which, index int, stack []StackItem, pre bool) error
-	AssignStmt     func(assignStmt *ast.AssignStmt, which Which, index int, stack []StackItem, pre bool) error
-	GoStmt         func(goStmt *ast.GoStmt, which Which, index int, stack []StackItem, pre bool) error
-	DeferStmt      func(deferStmt *ast.DeferStmt, which Which, index int, stack []StackItem, pre bool) error
-	ReturnStmt     func(returnStmt *ast.ReturnStmt, which Which, index int, stack []StackItem, pre bool) error
-	BranchStmt     func(branchStmt *ast.BranchStmt, which Which, index int, stack []StackItem, pre bool) error
-	BlockStmt      func(blockStmt *ast.BlockStmt, which Which, index int, stack []StackItem, pre bool) error
-	IfStmt         func(ifStmt *ast.IfStmt, which Which, index int, stack []StackItem, pre bool) error
-	CaseClause     func(caseClause *ast.CaseClause, which Which, index int, stack []StackItem, pre bool) error
-	SwitchStmt     func(switchStmt *ast.SwitchStmt, which Which, index int, stack []StackItem, pre bool) error
-	TypeSwitchStmt func(typeSwitchStmt *ast.TypeSwitchStmt, which Which, index int, stack []StackItem, pre bool) error
-	CommClause     func(commClause *ast.CommClause, which Which, index int, stack []StackItem, pre bool) error
-	SelectStmt     func(selectStmt *ast.SelectStmt, which Which, index int, stack []StackItem, pre bool) error
-	ForStmt        func(forStmt *ast.ForStmt, which Which, index int, stack []StackItem, pre bool) error
-	RangeStmt      func(rangeStmt *ast.RangeStmt, which Which, index int, stack []StackItem, pre bool) error
+	BadStmt        func(badStmt *ast.BadStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	DeclStmt       func(declStmt *ast.DeclStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	EmptyStmt      func(emptyStmt *ast.EmptyStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	LabeledStmt    func(labeledStmt *ast.LabeledStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	ExprStmt       func(exprStmt *ast.ExprStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	SendStmt       func(sendStmt *ast.SendStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	IncDecStmt     func(incDecStmt *ast.IncDecStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	AssignStmt     func(assignStmt *ast.AssignStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	GoStmt         func(goStmt *ast.GoStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	DeferStmt      func(deferStmt *ast.DeferStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	ReturnStmt     func(returnStmt *ast.ReturnStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	BranchStmt     func(branchStmt *ast.BranchStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	BlockStmt      func(blockStmt *ast.BlockStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	IfStmt         func(ifStmt *ast.IfStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	CaseClause     func(caseClause *ast.CaseClause, which Which, index int, stack []StackItem, pre bool, err error) error
+	SwitchStmt     func(switchStmt *ast.SwitchStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	TypeSwitchStmt func(typeSwitchStmt *ast.TypeSwitchStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	CommClause     func(commClause *ast.CommClause, which Which, index int, stack []StackItem, pre bool, err error) error
+	SelectStmt     func(selectStmt *ast.SelectStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	ForStmt        func(forStmt *ast.ForStmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	RangeStmt      func(rangeStmt *ast.RangeStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	BadDecl  func(badDecl *ast.BadDecl, which Which, index int, stack []StackItem, pre bool) error
-	GenDecl  func(genDecl *ast.GenDecl, which Which, index int, stack []StackItem, pre bool) error
-	FuncDecl func(funcDecl *ast.FuncDecl, which Which, index int, stack []StackItem, pre bool) error
+	BadDecl  func(badDecl *ast.BadDecl, which Which, index int, stack []StackItem, pre bool, err error) error
+	GenDecl  func(genDecl *ast.GenDecl, which Which, index int, stack []StackItem, pre bool, err error) error
+	FuncDecl func(funcDecl *ast.FuncDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	ImportSpec func(importSpec *ast.ImportSpec, which Which, index int, stack []StackItem, pre bool) error
-	ValueSpec  func(valueSpec *ast.ValueSpec, which Which, index int, stack []StackItem, pre bool) error
-	TypeSpec   func(typeSpec *ast.TypeSpec, which Which, index int, stack []StackItem, pre bool) error
+	ImportSpec func(importSpec *ast.ImportSpec, which Which, index int, stack []StackItem, pre bool, err error) error
+	ValueSpec  func(valueSpec *ast.ValueSpec, which Which, index int, stack []StackItem, pre bool, err error) error
+	TypeSpec   func(typeSpec *ast.TypeSpec, which Which, index int, stack []StackItem, pre bool, err error) error
 }
 
 func Walk(v *Visitor, n ast.Node) error {

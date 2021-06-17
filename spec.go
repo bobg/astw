@@ -12,15 +12,13 @@ func (v *Visitor) VisitImportSpec(n *ast.ImportSpec, which Which, index int, sta
 	}
 
 	if f := v.ImportSpec; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ImportSpec (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ImportSpec (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ImportSpec (post)")
 		}()
 	}
 
@@ -52,15 +50,13 @@ func (v *Visitor) VisitValueSpec(n *ast.ValueSpec, which Which, index int, stack
 	}
 
 	if f := v.ValueSpec; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in ValueSpec (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in ValueSpec (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in ValueSpec (post)")
 		}()
 	}
 
@@ -101,15 +97,13 @@ func (v *Visitor) VisitTypeSpec(n *ast.TypeSpec, which Which, index int, stack [
 	}
 
 	if f := v.TypeSpec; f != nil {
-		err = f(n, which, index, stack, true)
+		err = f(n, which, index, stack, true, nil)
 		if err != nil {
 			return errors.Wrap(err, "in TypeSpec (pre)")
 		}
 		defer func() {
-			if err == nil {
-				err = f(n, which, index, stack, false)
-				err = errors.Wrap(err, "in TypeSpec (post)")
-			}
+			err = f(n, which, index, stack, false, err)
+			err = errors.Wrap(err, "in TypeSpec (post)")
 		}()
 	}
 
