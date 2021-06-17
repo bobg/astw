@@ -1,5 +1,5 @@
-// Package goast implements an enhanced visitor for Go abstract syntax trees.
-package goast
+// Package astw implements an enhanced walker/visitor for Go abstract syntax trees.
+package astw
 
 import (
 	"go/ast"

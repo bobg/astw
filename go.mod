@@ -1,4 +1,4 @@
-module github.com/bobg/goast
+module github.com/bobg/astw
 
 go 1.16
 

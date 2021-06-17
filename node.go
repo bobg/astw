@@ -1,4 +1,4 @@
-package goast
+package astw
 
 import (
 	"fmt"
@@ -145,6 +145,18 @@ func (v *Visitor) VisitExpr(n ast.Expr, which Which, index int, stack []StackIte
 		err = v.VisitBinaryExpr(n, which, index, stack)
 	case *ast.KeyValueExpr:
 		err = v.VisitKeyValueExpr(n, which, index, stack)
+	case *ast.ArrayType:
+		err = v.VisitArrayType(n, which, index, stack)
+	case *ast.StructType:
+		err = v.VisitStructType(n, which, index, stack)
+	case *ast.FuncType:
+		err = v.VisitFuncType(n, which, index, stack)
+	case *ast.InterfaceType:
+		err = v.VisitInterfaceType(n, which, index, stack)
+	case *ast.MapType:
+		err = v.VisitMapType(n, which, index, stack)
+	case *ast.ChanType:
+		err = v.VisitChanType(n, which, index, stack)
 	default:
 		return fmt.Errorf("unknown expr type %T", n)
 	}

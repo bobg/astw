@@ -1,4 +1,4 @@
-package goast
+package astw
 
 import (
 	"go/ast"
