@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (v *Visitor) VisitCommentGroup(n *ast.CommentGroup, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitCommentGroup(n *ast.CommentGroup, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (v *Visitor) VisitCommentGroup(n *ast.CommentGroup, which Which, index int,
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
 	for i, comment := range n.List {
-		err = v.VisitComment(comment, CommentGroup_List, i, stack2)
+		err = v.visitComment(comment, CommentGroup_List, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (v *Visitor) VisitCommentGroup(n *ast.CommentGroup, which Which, index int,
 	return
 }
 
-func (v *Visitor) VisitComment(n *ast.Comment, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitComment(n *ast.Comment, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}

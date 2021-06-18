@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (v *Visitor) VisitBadDecl(n *ast.BadDecl, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitBadDecl(n *ast.BadDecl, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (v *Visitor) VisitBadDecl(n *ast.BadDecl, which Which, index int, stack []S
 	return
 }
 
-func (v *Visitor) VisitGenDecl(n *ast.GenDecl, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitGenDecl(n *ast.GenDecl, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -43,13 +43,13 @@ func (v *Visitor) VisitGenDecl(n *ast.GenDecl, which Which, index int, stack []S
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitCommentGroup(n.Doc, GenDecl_Doc, 0, stack2)
+	err = v.visitCommentGroup(n.Doc, GenDecl_Doc, 0, stack2)
 	if err != nil {
 		return err
 	}
 
 	for i, spec := range n.Specs {
-		err = v.VisitSpec(spec, GenDecl_Specs, i, stack2)
+		err = v.visitSpec(spec, GenDecl_Specs, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -58,7 +58,7 @@ func (v *Visitor) VisitGenDecl(n *ast.GenDecl, which Which, index int, stack []S
 	return
 }
 
-func (v *Visitor) VisitFuncDecl(n *ast.FuncDecl, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitFuncDecl(n *ast.FuncDecl, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -76,27 +76,27 @@ func (v *Visitor) VisitFuncDecl(n *ast.FuncDecl, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitCommentGroup(n.Doc, FuncDecl_Doc, 0, stack2)
+	err = v.visitCommentGroup(n.Doc, FuncDecl_Doc, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitFieldList(n.Recv, FuncDecl_Recv, 0, stack2)
+	err = v.visitFieldList(n.Recv, FuncDecl_Recv, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitIdent(n.Name, FuncDecl_Name, 0, stack2)
+	err = v.visitIdent(n.Name, FuncDecl_Name, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitFuncType(n.Type, FuncDecl_Type, 0, stack2)
+	err = v.visitFuncType(n.Type, FuncDecl_Type, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitBlockStmt(n.Body, FuncDecl_Body, 0, stack2)
+	err = v.visitBlockStmt(n.Body, FuncDecl_Body, 0, stack2)
 
 	return
 }

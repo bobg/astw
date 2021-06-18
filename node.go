@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (v *Visitor) VisitPackage(n *ast.Package, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitPackage(n *ast.Package, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -34,7 +34,7 @@ func (v *Visitor) VisitPackage(n *ast.Package, which Which, index int, stack []S
 
 	for i, filename := range filenames {
 		v.Filename = filename
-		err = v.VisitFile(n.Files[filename], Package_Files, i, stack2)
+		err = v.visitFile(n.Files[filename], Package_Files, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (v *Visitor) VisitPackage(n *ast.Package, which Which, index int, stack []S
 	return
 }
 
-func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitFile(n *ast.File, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -61,39 +61,39 @@ func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackIt
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitCommentGroup(n.Doc, File_Doc, 0, stack2)
+	err = v.visitCommentGroup(n.Doc, File_Doc, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitIdent(n.Name, File_Name, 0, stack2)
+	err = v.visitIdent(n.Name, File_Name, 0, stack2)
 	if err != nil {
 		return err
 	}
 
 	for i, decl := range n.Decls {
-		err = v.VisitDecl(decl, File_Decls, i, stack2)
+		err = v.visitDecl(decl, File_Decls, i, stack2)
 		if err != nil {
 			return err
 		}
 	}
 
 	for i, importSpec := range n.Imports {
-		err = v.VisitImportSpec(importSpec, File_Imports, i, stack2)
+		err = v.visitImportSpec(importSpec, File_Imports, i, stack2)
 		if err != nil {
 			return err
 		}
 	}
 
 	for i, ident := range n.Unresolved {
-		err = v.VisitIdent(ident, File_Unresolved, i, stack2)
+		err = v.visitIdent(ident, File_Unresolved, i, stack2)
 		if err != nil {
 			return err
 		}
 	}
 
 	for i, comment := range n.Comments {
-		err = v.VisitCommentGroup(comment, File_Comments, i, stack2)
+		err = v.visitCommentGroup(comment, File_Comments, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func (v *Visitor) VisitFile(n *ast.File, which Which, index int, stack []StackIt
 	return
 }
 
-func (v *Visitor) VisitNode(n ast.Node, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitNode(n ast.Node, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -120,16 +120,16 @@ func (v *Visitor) VisitNode(n ast.Node, which Which, index int, stack []StackIte
 
 	switch n := n.(type) {
 	case ast.Expr:
-		err = v.VisitExpr(n, which, index, stack)
+		err = v.visitExpr(n, which, index, stack)
 	case ast.Stmt:
-		err = v.VisitStmt(n, which, index, stack)
+		err = v.visitStmt(n, which, index, stack)
 	case ast.Decl:
-		err = v.VisitDecl(n, which, index, stack)
+		err = v.visitDecl(n, which, index, stack)
 	case ast.Spec:
-		err = v.VisitSpec(n, which, index, stack)
+		err = v.visitSpec(n, which, index, stack)
 
 	case *ast.File:
-		err = v.VisitFile(n, which, index, stack)
+		err = v.visitFile(n, which, index, stack)
 
 	default:
 		return fmt.Errorf("unknown node type %T", n)
@@ -138,7 +138,7 @@ func (v *Visitor) VisitNode(n ast.Node, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) VisitExpr(n ast.Expr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitExpr(n ast.Expr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -156,49 +156,49 @@ func (v *Visitor) VisitExpr(n ast.Expr, which Which, index int, stack []StackIte
 
 	switch n := n.(type) {
 	case *ast.BadExpr:
-		err = v.VisitBadExpr(n, which, index, stack)
+		err = v.visitBadExpr(n, which, index, stack)
 	case *ast.Ident:
-		err = v.VisitIdent(n, which, index, stack)
+		err = v.visitIdent(n, which, index, stack)
 	case *ast.Ellipsis:
-		err = v.VisitEllipsis(n, which, index, stack)
+		err = v.visitEllipsis(n, which, index, stack)
 	case *ast.BasicLit:
-		err = v.VisitBasicLit(n, which, index, stack)
+		err = v.visitBasicLit(n, which, index, stack)
 	case *ast.FuncLit:
-		err = v.VisitFuncLit(n, which, index, stack)
+		err = v.visitFuncLit(n, which, index, stack)
 	case *ast.CompositeLit:
-		err = v.VisitCompositeLit(n, which, index, stack)
+		err = v.visitCompositeLit(n, which, index, stack)
 	case *ast.ParenExpr:
-		err = v.VisitParenExpr(n, which, index, stack)
+		err = v.visitParenExpr(n, which, index, stack)
 	case *ast.SelectorExpr:
-		err = v.VisitSelectorExpr(n, which, index, stack)
+		err = v.visitSelectorExpr(n, which, index, stack)
 	case *ast.IndexExpr:
-		err = v.VisitIndexExpr(n, which, index, stack)
+		err = v.visitIndexExpr(n, which, index, stack)
 	case *ast.SliceExpr:
-		err = v.VisitSliceExpr(n, which, index, stack)
+		err = v.visitSliceExpr(n, which, index, stack)
 	case *ast.TypeAssertExpr:
-		err = v.VisitTypeAssertExpr(n, which, index, stack)
+		err = v.visitTypeAssertExpr(n, which, index, stack)
 	case *ast.CallExpr:
-		err = v.VisitCallExpr(n, which, index, stack)
+		err = v.visitCallExpr(n, which, index, stack)
 	case *ast.StarExpr:
-		err = v.VisitStarExpr(n, which, index, stack)
+		err = v.visitStarExpr(n, which, index, stack)
 	case *ast.UnaryExpr:
-		err = v.VisitUnaryExpr(n, which, index, stack)
+		err = v.visitUnaryExpr(n, which, index, stack)
 	case *ast.BinaryExpr:
-		err = v.VisitBinaryExpr(n, which, index, stack)
+		err = v.visitBinaryExpr(n, which, index, stack)
 	case *ast.KeyValueExpr:
-		err = v.VisitKeyValueExpr(n, which, index, stack)
+		err = v.visitKeyValueExpr(n, which, index, stack)
 	case *ast.ArrayType:
-		err = v.VisitArrayType(n, which, index, stack)
+		err = v.visitArrayType(n, which, index, stack)
 	case *ast.StructType:
-		err = v.VisitStructType(n, which, index, stack)
+		err = v.visitStructType(n, which, index, stack)
 	case *ast.FuncType:
-		err = v.VisitFuncType(n, which, index, stack)
+		err = v.visitFuncType(n, which, index, stack)
 	case *ast.InterfaceType:
-		err = v.VisitInterfaceType(n, which, index, stack)
+		err = v.visitInterfaceType(n, which, index, stack)
 	case *ast.MapType:
-		err = v.VisitMapType(n, which, index, stack)
+		err = v.visitMapType(n, which, index, stack)
 	case *ast.ChanType:
-		err = v.VisitChanType(n, which, index, stack)
+		err = v.visitChanType(n, which, index, stack)
 	default:
 		return fmt.Errorf("unknown expr type %T", n)
 	}
@@ -206,7 +206,7 @@ func (v *Visitor) VisitExpr(n ast.Expr, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) VisitStmt(n ast.Stmt, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitStmt(n ast.Stmt, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -224,47 +224,47 @@ func (v *Visitor) VisitStmt(n ast.Stmt, which Which, index int, stack []StackIte
 
 	switch n := n.(type) {
 	case *ast.BadStmt:
-		err = v.VisitBadStmt(n, which, index, stack)
+		err = v.visitBadStmt(n, which, index, stack)
 	case *ast.DeclStmt:
-		err = v.VisitDeclStmt(n, which, index, stack)
+		err = v.visitDeclStmt(n, which, index, stack)
 	case *ast.EmptyStmt:
-		err = v.VisitEmptyStmt(n, which, index, stack)
+		err = v.visitEmptyStmt(n, which, index, stack)
 	case *ast.LabeledStmt:
-		err = v.VisitLabeledStmt(n, which, index, stack)
+		err = v.visitLabeledStmt(n, which, index, stack)
 	case *ast.ExprStmt:
-		err = v.VisitExprStmt(n, which, index, stack)
+		err = v.visitExprStmt(n, which, index, stack)
 	case *ast.SendStmt:
-		err = v.VisitSendStmt(n, which, index, stack)
+		err = v.visitSendStmt(n, which, index, stack)
 	case *ast.IncDecStmt:
-		err = v.VisitIncDecStmt(n, which, index, stack)
+		err = v.visitIncDecStmt(n, which, index, stack)
 	case *ast.AssignStmt:
-		err = v.VisitAssignStmt(n, which, index, stack)
+		err = v.visitAssignStmt(n, which, index, stack)
 	case *ast.GoStmt:
-		err = v.VisitGoStmt(n, which, index, stack)
+		err = v.visitGoStmt(n, which, index, stack)
 	case *ast.DeferStmt:
-		err = v.VisitDeferStmt(n, which, index, stack)
+		err = v.visitDeferStmt(n, which, index, stack)
 	case *ast.ReturnStmt:
-		err = v.VisitReturnStmt(n, which, index, stack)
+		err = v.visitReturnStmt(n, which, index, stack)
 	case *ast.BranchStmt:
-		err = v.VisitBranchStmt(n, which, index, stack)
+		err = v.visitBranchStmt(n, which, index, stack)
 	case *ast.BlockStmt:
-		err = v.VisitBlockStmt(n, which, index, stack)
+		err = v.visitBlockStmt(n, which, index, stack)
 	case *ast.IfStmt:
-		err = v.VisitIfStmt(n, which, index, stack)
+		err = v.visitIfStmt(n, which, index, stack)
 	case *ast.CaseClause:
-		err = v.VisitCaseClause(n, which, index, stack)
+		err = v.visitCaseClause(n, which, index, stack)
 	case *ast.SwitchStmt:
-		err = v.VisitSwitchStmt(n, which, index, stack)
+		err = v.visitSwitchStmt(n, which, index, stack)
 	case *ast.TypeSwitchStmt:
-		err = v.VisitTypeSwitchStmt(n, which, index, stack)
+		err = v.visitTypeSwitchStmt(n, which, index, stack)
 	case *ast.CommClause:
-		err = v.VisitCommClause(n, which, index, stack)
+		err = v.visitCommClause(n, which, index, stack)
 	case *ast.SelectStmt:
-		err = v.VisitSelectStmt(n, which, index, stack)
+		err = v.visitSelectStmt(n, which, index, stack)
 	case *ast.ForStmt:
-		err = v.VisitForStmt(n, which, index, stack)
+		err = v.visitForStmt(n, which, index, stack)
 	case *ast.RangeStmt:
-		err = v.VisitRangeStmt(n, which, index, stack)
+		err = v.visitRangeStmt(n, which, index, stack)
 	default:
 		return fmt.Errorf("unknown stmt type %T", n)
 	}
@@ -272,7 +272,7 @@ func (v *Visitor) VisitStmt(n ast.Stmt, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) VisitDecl(n ast.Decl, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitDecl(n ast.Decl, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -290,11 +290,11 @@ func (v *Visitor) VisitDecl(n ast.Decl, which Which, index int, stack []StackIte
 
 	switch n := n.(type) {
 	case *ast.BadDecl:
-		err = v.VisitBadDecl(n, which, index, stack)
+		err = v.visitBadDecl(n, which, index, stack)
 	case *ast.GenDecl:
-		err = v.VisitGenDecl(n, which, index, stack)
+		err = v.visitGenDecl(n, which, index, stack)
 	case *ast.FuncDecl:
-		err = v.VisitFuncDecl(n, which, index, stack)
+		err = v.visitFuncDecl(n, which, index, stack)
 	default:
 		return fmt.Errorf("unknown decl type %T", n)
 	}
@@ -302,7 +302,7 @@ func (v *Visitor) VisitDecl(n ast.Decl, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) VisitSpec(n ast.Spec, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitSpec(n ast.Spec, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -320,11 +320,11 @@ func (v *Visitor) VisitSpec(n ast.Spec, which Which, index int, stack []StackIte
 
 	switch n := n.(type) {
 	case *ast.ImportSpec:
-		err = v.VisitImportSpec(n, which, index, stack)
+		err = v.visitImportSpec(n, which, index, stack)
 	case *ast.ValueSpec:
-		err = v.VisitValueSpec(n, which, index, stack)
+		err = v.visitValueSpec(n, which, index, stack)
 	case *ast.TypeSpec:
-		err = v.VisitTypeSpec(n, which, index, stack)
+		err = v.visitTypeSpec(n, which, index, stack)
 	default:
 		return fmt.Errorf("unknown spec type %T", n)
 	}

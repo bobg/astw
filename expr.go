@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (v *Visitor) VisitBadExpr(n *ast.BadExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitBadExpr(n *ast.BadExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (v *Visitor) VisitBadExpr(n *ast.BadExpr, which Which, index int, stack []S
 	return
 }
 
-func (v *Visitor) VisitIdent(n *ast.Ident, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitIdent(n *ast.Ident, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -44,7 +44,7 @@ func (v *Visitor) VisitIdent(n *ast.Ident, which Which, index int, stack []Stack
 	return
 }
 
-func (v *Visitor) VisitEllipsis(n *ast.Ellipsis, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitEllipsis(n *ast.Ellipsis, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -62,7 +62,7 @@ func (v *Visitor) VisitEllipsis(n *ast.Ellipsis, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Elt, Ellipsis_Elt, 0, stack2)
+	err = v.visitExpr(n.Elt, Ellipsis_Elt, 0, stack2)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (v *Visitor) VisitEllipsis(n *ast.Ellipsis, which Which, index int, stack [
 	return
 }
 
-func (v *Visitor) VisitBasicLit(n *ast.BasicLit, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitBasicLit(n *ast.BasicLit, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -89,7 +89,7 @@ func (v *Visitor) VisitBasicLit(n *ast.BasicLit, which Which, index int, stack [
 	return
 }
 
-func (v *Visitor) VisitFuncLit(n *ast.FuncLit, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitFuncLit(n *ast.FuncLit, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -107,17 +107,17 @@ func (v *Visitor) VisitFuncLit(n *ast.FuncLit, which Which, index int, stack []S
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitFuncType(n.Type, FuncLit_Type, 0, stack2)
+	err = v.visitFuncType(n.Type, FuncLit_Type, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitBlockStmt(n.Body, FuncLit_Body, 0, stack2)
+	err = v.visitBlockStmt(n.Body, FuncLit_Body, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitCompositeLit(n *ast.CompositeLit, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitCompositeLit(n *ast.CompositeLit, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -135,13 +135,13 @@ func (v *Visitor) VisitCompositeLit(n *ast.CompositeLit, which Which, index int,
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Type, CompositeLit_Type, 0, stack2)
+	err = v.visitExpr(n.Type, CompositeLit_Type, 0, stack2)
 	if err != nil {
 		return err
 	}
 
 	for i, expr := range n.Elts {
-		err = v.VisitExpr(expr, CompositeLit_Elts, i, stack2)
+		err = v.visitExpr(expr, CompositeLit_Elts, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -150,7 +150,7 @@ func (v *Visitor) VisitCompositeLit(n *ast.CompositeLit, which Which, index int,
 	return
 }
 
-func (v *Visitor) VisitParenExpr(n *ast.ParenExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitParenExpr(n *ast.ParenExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -168,12 +168,12 @@ func (v *Visitor) VisitParenExpr(n *ast.ParenExpr, which Which, index int, stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, ParenExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, ParenExpr_X, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitSelectorExpr(n *ast.SelectorExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitSelectorExpr(n *ast.SelectorExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -191,17 +191,17 @@ func (v *Visitor) VisitSelectorExpr(n *ast.SelectorExpr, which Which, index int,
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, SelectorExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, SelectorExpr_X, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitIdent(n.Sel, SelectorExpr_Sel, 0, stack2)
+	err = v.visitIdent(n.Sel, SelectorExpr_Sel, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitIndexExpr(n *ast.IndexExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitIndexExpr(n *ast.IndexExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -219,17 +219,17 @@ func (v *Visitor) VisitIndexExpr(n *ast.IndexExpr, which Which, index int, stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, IndexExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, IndexExpr_X, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Index, IndexExpr_Index, 0, stack2)
+	err = v.visitExpr(n.Index, IndexExpr_Index, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitSliceExpr(n *ast.SliceExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitSliceExpr(n *ast.SliceExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -247,22 +247,22 @@ func (v *Visitor) VisitSliceExpr(n *ast.SliceExpr, which Which, index int, stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, SliceExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, SliceExpr_X, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Low, SliceExpr_Low, 0, stack2)
+	err = v.visitExpr(n.Low, SliceExpr_Low, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.High, SliceExpr_High, 0, stack2)
+	err = v.visitExpr(n.High, SliceExpr_High, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Max, SliceExpr_Max, 0, stack2)
+	err = v.visitExpr(n.Max, SliceExpr_Max, 0, stack2)
 	if err != nil {
 		return err
 	}
@@ -270,7 +270,7 @@ func (v *Visitor) VisitSliceExpr(n *ast.SliceExpr, which Which, index int, stack
 	return
 }
 
-func (v *Visitor) VisitTypeAssertExpr(n *ast.TypeAssertExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitTypeAssertExpr(n *ast.TypeAssertExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -288,17 +288,17 @@ func (v *Visitor) VisitTypeAssertExpr(n *ast.TypeAssertExpr, which Which, index 
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, TypeAssertExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, TypeAssertExpr_X, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Type, TypeAssertExpr_Type, 0, stack2)
+	err = v.visitExpr(n.Type, TypeAssertExpr_Type, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitCallExpr(n *ast.CallExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitCallExpr(n *ast.CallExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -316,13 +316,13 @@ func (v *Visitor) VisitCallExpr(n *ast.CallExpr, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Fun, CallExpr_Fun, 0, stack2)
+	err = v.visitExpr(n.Fun, CallExpr_Fun, 0, stack2)
 	if err != nil {
 		return err
 	}
 
 	for i, expr := range n.Args {
-		err = v.VisitExpr(expr, CallExpr_Args, i, stack2)
+		err = v.visitExpr(expr, CallExpr_Args, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -331,7 +331,7 @@ func (v *Visitor) VisitCallExpr(n *ast.CallExpr, which Which, index int, stack [
 	return
 }
 
-func (v *Visitor) VisitStarExpr(n *ast.StarExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitStarExpr(n *ast.StarExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -349,12 +349,12 @@ func (v *Visitor) VisitStarExpr(n *ast.StarExpr, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, StarExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, StarExpr_X, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitUnaryExpr(n *ast.UnaryExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitUnaryExpr(n *ast.UnaryExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -372,12 +372,12 @@ func (v *Visitor) VisitUnaryExpr(n *ast.UnaryExpr, which Which, index int, stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, UnaryExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, UnaryExpr_X, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitBinaryExpr(n *ast.BinaryExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitBinaryExpr(n *ast.BinaryExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -395,17 +395,17 @@ func (v *Visitor) VisitBinaryExpr(n *ast.BinaryExpr, which Which, index int, sta
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.X, BinaryExpr_X, 0, stack2)
+	err = v.visitExpr(n.X, BinaryExpr_X, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Y, BinaryExpr_Y, 0, stack2)
+	err = v.visitExpr(n.Y, BinaryExpr_Y, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitKeyValueExpr(n *ast.KeyValueExpr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitKeyValueExpr(n *ast.KeyValueExpr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -423,17 +423,17 @@ func (v *Visitor) VisitKeyValueExpr(n *ast.KeyValueExpr, which Which, index int,
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Key, KeyValueExpr_Key, 0, stack2)
+	err = v.visitExpr(n.Key, KeyValueExpr_Key, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Value, KeyValueExpr_Value, 0, stack2)
+	err = v.visitExpr(n.Value, KeyValueExpr_Value, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitArrayType(n *ast.ArrayType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitArrayType(n *ast.ArrayType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -451,17 +451,17 @@ func (v *Visitor) VisitArrayType(n *ast.ArrayType, which Which, index int, stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Len, ArrayType_Len, 0, stack2)
+	err = v.visitExpr(n.Len, ArrayType_Len, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Elt, ArrayType_Elt, 0, stack2)
+	err = v.visitExpr(n.Elt, ArrayType_Elt, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitStructType(n *ast.StructType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitStructType(n *ast.StructType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -479,12 +479,12 @@ func (v *Visitor) VisitStructType(n *ast.StructType, which Which, index int, sta
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitFieldList(n.Fields, StructType_Fields, 0, stack2)
+	err = v.visitFieldList(n.Fields, StructType_Fields, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitFuncType(n *ast.FuncType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitFuncType(n *ast.FuncType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -502,17 +502,17 @@ func (v *Visitor) VisitFuncType(n *ast.FuncType, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitFieldList(n.Params, FuncType_Params, 0, stack2)
+	err = v.visitFieldList(n.Params, FuncType_Params, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitFieldList(n.Results, FuncType_Results, 0, stack2)
+	err = v.visitFieldList(n.Results, FuncType_Results, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitInterfaceType(n *ast.InterfaceType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitInterfaceType(n *ast.InterfaceType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -530,12 +530,12 @@ func (v *Visitor) VisitInterfaceType(n *ast.InterfaceType, which Which, index in
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitFieldList(n.Methods, InterfaceType_Methods, 0, stack2)
+	err = v.visitFieldList(n.Methods, InterfaceType_Methods, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitMapType(n *ast.MapType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitMapType(n *ast.MapType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -553,17 +553,17 @@ func (v *Visitor) VisitMapType(n *ast.MapType, which Which, index int, stack []S
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Key, MapType_Key, 0, stack2)
+	err = v.visitExpr(n.Key, MapType_Key, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitExpr(n.Value, MapType_Value, 0, stack2)
+	err = v.visitExpr(n.Value, MapType_Value, 0, stack2)
 
 	return
 }
 
-func (v *Visitor) VisitChanType(n *ast.ChanType, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitChanType(n *ast.ChanType, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -581,7 +581,7 @@ func (v *Visitor) VisitChanType(n *ast.ChanType, which Which, index int, stack [
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitExpr(n.Value, ChanType_Value, 0, stack2)
+	err = v.visitExpr(n.Value, ChanType_Value, 0, stack2)
 
 	return
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (v *Visitor) VisitFieldList(n *ast.FieldList, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitFieldList(n *ast.FieldList, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (v *Visitor) VisitFieldList(n *ast.FieldList, which Which, index int, stack
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
 	for i, field := range n.List {
-		err = v.VisitField(field, FieldList_List, i, stack2)
+		err = v.visitField(field, FieldList_List, i, stack2)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (v *Visitor) VisitFieldList(n *ast.FieldList, which Which, index int, stack
 	return
 }
 
-func (v *Visitor) VisitField(n *ast.Field, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitField(n *ast.Field, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
 	}
@@ -52,29 +52,29 @@ func (v *Visitor) VisitField(n *ast.Field, which Which, index int, stack []Stack
 
 	stack2 := append(stack, StackItem{N: n, W: which, I: index})
 
-	err = v.VisitCommentGroup(n.Doc, Field_Doc, 0, stack2)
+	err = v.visitCommentGroup(n.Doc, Field_Doc, 0, stack2)
 	if err != nil {
 		return err
 	}
 
 	for i, ident := range n.Names {
-		err = v.VisitIdent(ident, Field_Names, i, stack2)
+		err = v.visitIdent(ident, Field_Names, i, stack2)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = v.VisitExpr(n.Type, Field_Type, 0, stack2)
+	err = v.visitExpr(n.Type, Field_Type, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitBasicLit(n.Tag, Field_Tag, 0, stack2)
+	err = v.visitBasicLit(n.Tag, Field_Tag, 0, stack2)
 	if err != nil {
 		return err
 	}
 
-	err = v.VisitCommentGroup(n.Comment, Field_Comment, 0, stack2)
+	err = v.visitCommentGroup(n.Comment, Field_Comment, 0, stack2)
 
 	return
 }
