@@ -76,8 +76,9 @@ After parsing, this is represented by a `*ast.IfStmt`.
 
 Now imagine this `IfStmt` is passed to this package’s `Walk` function,
 together with a `Visitor` with suitable callbacks defined.
-Here is the sequence of events that will occur.
-(Here, `v` refers to the `Visitor`.)
+Here is the sequence of events that will occur,
+assuming all the relevant callbacks in the `Visitor`, `v`, are non-`nil`.
+(Callbacks that are `nil` are simply skipped.)
 
 1. v.Node( _the IfStmt_, `Top`, 0, nil, true, nil )
 2. v.Stmt( _the IfStmt_, `Top`, 0, nil, true, nil )
@@ -175,8 +176,8 @@ We descend into and then out of the sole child of the `y++` node.
 
 Post-visiting the `y++` node.
 
-23. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
-24. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
+25. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
+26. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
 
 We now visit the second child of the `BlockStmt`:
 the `return z` node.
@@ -184,19 +185,19 @@ the `return z` node.
 The value of the `index` parameter, 1,
 tells us that this is the second element in the `BlockStmt`’s list.
 
-25. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
-26. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
-27. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
-28. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
+27. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
+28. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
+29. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
+30. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
 
 Descending into and out of the sole child of the `return z` node.
 
-29. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
-30. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
-31. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], false, err )
-32. v.IfStmt( _the IfStmt_, `Top`, 0, nil, false, err )
-33. v.Stmt( _the IfStmt_, `Top`, 0, nil, false, err )
-34. v.Node( _the IfStmt_, `Top`, 0, nil, false, err )
+31. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
+32. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
+33. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], false, err )
+34. v.IfStmt( _the IfStmt_, `Top`, 0, nil, false, err )
+35. v.Stmt( _the IfStmt_, `Top`, 0, nil, false, err )
+36. v.Node( _the IfStmt_, `Top`, 0, nil, false, err )
 
 Post-visiting everything on the way out of the tree,
 all the way back to the top.
