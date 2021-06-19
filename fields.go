@@ -13,6 +13,9 @@ func (v *Visitor) visitFieldList(n *ast.FieldList, which Which, index int, stack
 
 	if f := v.FieldList; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in FieldList (pre)")
 		}
@@ -41,6 +44,9 @@ func (v *Visitor) visitField(n *ast.Field, which Which, index int, stack []Stack
 
 	if f := v.Field; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Field (pre)")
 		}

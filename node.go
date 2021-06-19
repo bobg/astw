@@ -15,6 +15,9 @@ func (v *Visitor) visitPackage(n *ast.Package, which Which, index int, stack []S
 
 	if f := v.Package; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Package (pre)")
 		}
@@ -50,6 +53,9 @@ func (v *Visitor) visitFile(n *ast.File, which Which, index int, stack []StackIt
 
 	if f := v.File; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in File (pre)")
 		}
@@ -109,6 +115,9 @@ func (v *Visitor) visitNode(n ast.Node, which Which, index int, stack []StackIte
 
 	if f := v.Node; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Node (pre)")
 		}
@@ -145,6 +154,9 @@ func (v *Visitor) visitExpr(n ast.Expr, which Which, index int, stack []StackIte
 
 	if f := v.Expr; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Expr (pre)")
 		}
@@ -213,6 +225,9 @@ func (v *Visitor) visitStmt(n ast.Stmt, which Which, index int, stack []StackIte
 
 	if f := v.Stmt; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Stmt (pre)")
 		}
@@ -279,6 +294,9 @@ func (v *Visitor) visitDecl(n ast.Decl, which Which, index int, stack []StackIte
 
 	if f := v.Decl; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Decl (pre)")
 		}
@@ -309,6 +327,9 @@ func (v *Visitor) visitSpec(n ast.Spec, which Which, index int, stack []StackIte
 
 	if f := v.Spec; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Spec (pre)")
 		}

@@ -13,6 +13,9 @@ func (v *Visitor) visitImportSpec(n *ast.ImportSpec, which Which, index int, sta
 
 	if f := v.ImportSpec; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in ImportSpec (pre)")
 		}
@@ -51,6 +54,9 @@ func (v *Visitor) visitValueSpec(n *ast.ValueSpec, which Which, index int, stack
 
 	if f := v.ValueSpec; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in ValueSpec (pre)")
 		}
@@ -98,6 +104,9 @@ func (v *Visitor) visitTypeSpec(n *ast.TypeSpec, which Which, index int, stack [
 
 	if f := v.TypeSpec; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in TypeSpec (pre)")
 		}

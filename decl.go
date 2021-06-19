@@ -13,6 +13,9 @@ func (v *Visitor) visitBadDecl(n *ast.BadDecl, which Which, index int, stack []S
 
 	if f := v.BadDecl; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in BadDecl (pre)")
 		}
@@ -32,6 +35,9 @@ func (v *Visitor) visitGenDecl(n *ast.GenDecl, which Which, index int, stack []S
 
 	if f := v.GenDecl; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in GenDecl (pre)")
 		}
@@ -65,6 +71,9 @@ func (v *Visitor) visitFuncDecl(n *ast.FuncDecl, which Which, index int, stack [
 
 	if f := v.FuncDecl; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in FuncDecl (pre)")
 		}

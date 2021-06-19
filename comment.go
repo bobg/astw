@@ -13,6 +13,9 @@ func (v *Visitor) visitCommentGroup(n *ast.CommentGroup, which Which, index int,
 
 	if f := v.CommentGroup; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in CommentGroup (pre)")
 		}
@@ -41,6 +44,9 @@ func (v *Visitor) visitComment(n *ast.Comment, which Which, index int, stack []S
 
 	if f := v.Comment; f != nil {
 		err = f(n, which, index, stack, true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
 		if err != nil {
 			return errors.Wrap(err, "in Comment (pre)")
 		}

@@ -2,6 +2,7 @@
 package astw
 
 import (
+	"errors"
 	"go/ast"
 )
 
@@ -198,10 +199,10 @@ type StackItem struct {
 // mapping filenames to File nodes.
 // When File nodes are visited via a Package node,
 // they are visited in lexical filename order.
-// The index value passed to the File callback represents this ordering.
+// The index value passed to the File callback reflects this ordering.
 // When the File callback is invoked via a Package node parent
 // (i.e., the Which value is Package_Files),
-// the filename from the map is in the Visitor's Filename field.
+// the filename from the map can be found in the Visitor's Filename field.
 type Visitor struct {
 	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool, err error) error
 
@@ -281,3 +282,9 @@ type Visitor struct {
 func Walk(v *Visitor, n ast.Node) error {
 	return v.visitNode(n, Top, 0, nil)
 }
+
+// ErrSkip is an error that a pre-visit callback can return to cause Walk to skip its children.
+// The post-visit of the same callback is also skipped.
+// Unlike other errors, it is not propagated up the call stack
+// (i.e., the post-visit of the parent callback will receive a value of nil for its err argument).
+var ErrSkip = errors.New("skip")
