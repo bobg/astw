@@ -206,17 +206,29 @@ type StackItem struct {
 type Visitor struct {
 	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	Package func(pkg *ast.Package, which Which, index int, stack []StackItem, pre bool, err error) error
-	File    func(file *ast.File, which Which, index int, stack []StackItem, pre bool, err error) error
-
 	// Filename is the name of the current file,
 	// when the File callback is invoked as a child of a Package node.
 	Filename string
+
+	// Package, File, Comment, CommentGroup, FieldList, and Field
+	// are Nodes that are not Exprs, Stmts, Decls, or Specs.
+
+	Package      func(pkg *ast.Package, which Which, index int, stack []StackItem, pre bool, err error) error
+	File         func(file *ast.File, which Which, index int, stack []StackItem, pre bool, err error) error
+	Comment      func(comment *ast.Comment, which Which, index int, stack []StackItem, pre bool, err error) error
+	CommentGroup func(commentGroup *ast.CommentGroup, which Which, index int, stack []StackItem, pre bool, err error) error
+	FieldList    func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool, err error) error
+	Field        func(field *ast.Field, which Which, index int, stack []StackItem, pre bool, err error) error
+
+	// Expr, Stmt, Decl, and Spec are the intermediate interface types.
+	// All remaining concrete Node types implement one of these interfaces.
 
 	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool, err error) error
 	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool, err error) error
 	Decl func(decl ast.Decl, which Which, index int, stack []StackItem, pre bool, err error) error
 	Spec func(spec ast.Spec, which Which, index int, stack []StackItem, pre bool, err error) error
+
+	// Exprs.
 
 	BadExpr        func(badExpr *ast.BadExpr, which Which, index int, stack []StackItem, pre bool, err error) error
 	Ident          func(ident *ast.Ident, which Which, index int, stack []StackItem, pre bool, err error) error
@@ -241,11 +253,7 @@ type Visitor struct {
 	MapType        func(mapType *ast.MapType, which Which, index int, stack []StackItem, pre bool, err error) error
 	ChanType       func(chanType *ast.ChanType, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	Comment      func(comment *ast.Comment, which Which, index int, stack []StackItem, pre bool, err error) error
-	CommentGroup func(commentGroup *ast.CommentGroup, which Which, index int, stack []StackItem, pre bool, err error) error
-
-	FieldList func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool, err error) error
-	Field     func(field *ast.Field, which Which, index int, stack []StackItem, pre bool, err error) error
+	// Stmts.
 
 	BadStmt        func(badStmt *ast.BadStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 	DeclStmt       func(declStmt *ast.DeclStmt, which Which, index int, stack []StackItem, pre bool, err error) error
@@ -269,9 +277,13 @@ type Visitor struct {
 	ForStmt        func(forStmt *ast.ForStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 	RangeStmt      func(rangeStmt *ast.RangeStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 
+	// Decls.
+
 	BadDecl  func(badDecl *ast.BadDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 	GenDecl  func(genDecl *ast.GenDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 	FuncDecl func(funcDecl *ast.FuncDecl, which Which, index int, stack []StackItem, pre bool, err error) error
+
+	// Specs.
 
 	ImportSpec func(importSpec *ast.ImportSpec, which Which, index int, stack []StackItem, pre bool, err error) error
 	ValueSpec  func(valueSpec *ast.ValueSpec, which Which, index int, stack []StackItem, pre bool, err error) error
