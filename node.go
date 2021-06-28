@@ -1,141 +1,22 @@
 package astw
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
-	"sort"
-
-	"github.com/pkg/errors"
+	"reflect"
 )
 
-func (v *Visitor) visitPackage(n *ast.Package, which Which, index int, stack []StackItem) (err error) {
-	if n == nil {
-		return nil
-	}
-
-	if f := v.Package; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Package (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Package (post)")
-		}()
-	}
-
-	stack2 := append(stack, StackItem{N: n, W: which, I: index})
-
-	var filenames []string
-	for filename := range n.Files {
-		filenames = append(filenames, filename)
-	}
-	sort.Strings(filenames)
-
-	for i, filename := range filenames {
-		v.Filename = filename
-		err = v.visitFile(n.Files[filename], Package_Files, i, stack2)
-		if err != nil {
-			return err
-		}
-	}
-
-	return
-}
-
-func (v *Visitor) visitFile(n *ast.File, which Which, index int, stack []StackItem) (err error) {
-	if n == nil {
-		return nil
-	}
-
-	if f := v.File; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in File (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in File (post)")
-		}()
-	}
-
-	stack2 := append(stack, StackItem{N: n, W: which, I: index})
-
-	err = v.visitCommentGroup(n.Doc, File_Doc, 0, stack2)
-	if err != nil {
-		return err
-	}
-
-	err = v.visitIdent(n.Name, File_Name, 0, stack2)
-	if err != nil {
-		return err
-	}
-
-	for i, decl := range n.Decls {
-		err = v.visitDecl(decl, File_Decls, i, stack2)
-		if err != nil {
-			return err
-		}
-	}
-
-	for i, importSpec := range n.Imports {
-		err = v.visitImportSpec(importSpec, File_Imports, i, stack2)
-		if err != nil {
-			return err
-		}
-	}
-
-	for i, ident := range n.Unresolved {
-		err = v.visitIdent(ident, File_Unresolved, i, stack2)
-		if err != nil {
-			return err
-		}
-	}
-
-	for i, comment := range n.Comments {
-		err = v.visitCommentGroup(comment, File_Comments, i, stack2)
-		if err != nil {
-			return err
-		}
-	}
-
-	return
-}
-
-func (v *Visitor) visitNode(n ast.Node, which Which, index int, stack []StackItem) (err error) {
-	if n == nil {
-		return nil
-	}
-
-	if f := v.Node; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Node (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Node (post)")
-		}()
-	}
-
+func (v *Visitor) visitAbstractNode(n ast.Node, which Which, index int, stack []StackItem) (err error) {
 	switch n := n.(type) {
 	case ast.Expr:
-		err = v.visitExpr(n, which, index, stack)
+		err = v.visitAbstractExpr(n, which, index, stack)
 	case ast.Stmt:
-		err = v.visitStmt(n, which, index, stack)
+		err = v.visitAbstractStmt(n, which, index, stack)
 	case ast.Decl:
-		err = v.visitDecl(n, which, index, stack)
+		err = v.visitAbstractDecl(n, which, index, stack)
 	case ast.Spec:
-		err = v.visitSpec(n, which, index, stack)
+		err = v.visitAbstractSpec(n, which, index, stack)
 
 	case *ast.File:
 		err = v.visitFile(n, which, index, stack)
@@ -147,23 +28,9 @@ func (v *Visitor) visitNode(n ast.Node, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) visitExpr(n ast.Expr, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitAbstractExpr(n ast.Expr, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
-	}
-
-	if f := v.Expr; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Expr (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Expr (post)")
-		}()
 	}
 
 	switch n := n.(type) {
@@ -218,23 +85,9 @@ func (v *Visitor) visitExpr(n ast.Expr, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) visitStmt(n ast.Stmt, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitAbstractStmt(n ast.Stmt, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
-	}
-
-	if f := v.Stmt; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Stmt (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Stmt (post)")
-		}()
 	}
 
 	switch n := n.(type) {
@@ -287,23 +140,9 @@ func (v *Visitor) visitStmt(n ast.Stmt, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) visitDecl(n ast.Decl, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitAbstractDecl(n ast.Decl, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
-	}
-
-	if f := v.Decl; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Decl (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Decl (post)")
-		}()
 	}
 
 	switch n := n.(type) {
@@ -320,23 +159,9 @@ func (v *Visitor) visitDecl(n ast.Decl, which Which, index int, stack []StackIte
 	return
 }
 
-func (v *Visitor) visitSpec(n ast.Spec, which Which, index int, stack []StackItem) (err error) {
+func (v *Visitor) visitAbstractSpec(n ast.Spec, which Which, index int, stack []StackItem) (err error) {
 	if n == nil {
 		return nil
-	}
-
-	if f := v.Spec; f != nil {
-		err = f(n, which, index, stack, true, nil)
-		if errors.Is(err, ErrSkip) {
-			return nil
-		}
-		if err != nil {
-			return errors.Wrap(err, "in Spec (pre)")
-		}
-		defer func() {
-			err = f(n, which, index, stack, false, err)
-			err = errors.Wrap(err, "in Spec (post)")
-		}()
 	}
 
 	switch n := n.(type) {
@@ -351,4 +176,96 @@ func (v *Visitor) visitSpec(n ast.Spec, which Which, index int, stack []StackIte
 	}
 
 	return
+}
+
+func (v *Visitor) visitConcreteNode(n ast.Node, which Which, index int, stack []StackItem, cbfunc func() func(bool, error) error, childfunc func([]StackItem) error) error {
+	return v.visitConcreteNodeHelper(n, which, index, stack, cbfunc(), childfunc)
+}
+
+// ErrSkip is an error that a pre-visit callback can return to cause Walk to skip its children.
+// The post-visit of the same callback is also skipped.
+// Unlike other errors, it is not propagated up the call stack
+// (i.e., the post-visit of the parent callback will receive a value of nil for its err argument).
+var ErrSkip = errors.New("skip")
+
+func (v *Visitor) visitConcreteNodeHelper(n ast.Node, which Which, index int, stack []StackItem, cb func(bool, error) error, childfunc func([]StackItem) error) error {
+	// The following line is brought to you by the dreaded typed nil
+	// (`if n == nil` is not good enough).
+	if reflect.ValueOf(n).IsNil() {
+		return nil
+	}
+	if cb == nil {
+		if f := v.Node; f != nil {
+			cb = func(pre bool, err error) error { return f(n, which, index, stack, pre, err) }
+		}
+	}
+	if cb != nil {
+		err := cb(true, nil)
+		if errors.Is(err, ErrSkip) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+	}
+	var err error
+	if childfunc != nil {
+		err = childfunc(append(stack, StackItem{N: n, W: which, I: index}))
+	}
+	if cb != nil {
+		return cb(false, err)
+	}
+	return err
+}
+
+func (v *Visitor) visitConcreteDecl(n ast.Decl, which Which, index int, stack []StackItem, cbfunc func() func(bool, error) error, childfunc func([]StackItem) error) error {
+	if n == nil {
+		return nil
+	}
+	cb := cbfunc()
+	if cb == nil {
+		if f := v.Decl; f != nil {
+			cb = func(pre bool, err error) error { return f(n, which, index, stack, pre, err) }
+		}
+	}
+	return v.visitConcreteNodeHelper(n, which, index, stack, cb, childfunc)
+}
+
+func (v *Visitor) visitConcreteExpr(n ast.Expr, which Which, index int, stack []StackItem, cbfunc func() func(bool, error) error, childfunc func([]StackItem) error) error {
+	if n == nil {
+		return nil
+	}
+	cb := cbfunc()
+	if cb == nil {
+		if f := v.Expr; f != nil {
+			cb = func(pre bool, err error) error { return f(n, which, index, stack, pre, err) }
+		}
+	}
+	return v.visitConcreteNodeHelper(n, which, index, stack, cb, childfunc)
+}
+
+func (v *Visitor) visitConcreteSpec(n ast.Spec, which Which, index int, stack []StackItem, cbfunc func() func(bool, error) error, childfunc func([]StackItem) error) error {
+	if n == nil {
+		return nil
+	}
+	cb := cbfunc()
+	if cb == nil {
+		if f := v.Spec; f != nil {
+			cb = func(pre bool, err error) error { return f(n, which, index, stack, pre, err) }
+		}
+	}
+	return v.visitConcreteNodeHelper(n, which, index, stack, cb, childfunc)
+}
+
+func (v *Visitor) visitConcreteStmt(n ast.Stmt, which Which, index int, stack []StackItem, cbfunc func() func(bool, error) error, childfunc func([]StackItem) error) error {
+	if n == nil {
+		return nil
+	}
+	cb := cbfunc()
+	if cb == nil {
+		if f := v.Stmt; f != nil {
+			cb = func(pre bool, err error) error { return f(n, which, index, stack, pre, err) }
+		}
+	}
+	return v.visitConcreteNodeHelper(n, which, index, stack, cb, childfunc)
 }

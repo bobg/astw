@@ -32,22 +32,6 @@ Each callback receives as arguments:
 
 Callbacks are never invoked on `nil` nodes.
 
-Nodes in a Go syntax tree have concrete types like `*IfStmt` and `*BinaryExpr`.
-However, these concrete types are grouped into a handful of abstract interfaces:
-`Expr`, `Stmt`, `Decl`, and `Spec`,
-plus `Node`,
-which the others all implement.
-
-When a node of an abstract type is visited,
-its abstract-type callback is invoked,
-and then its concrete-type callback is invoked.
-(For “pre” visits.
-For “post” visits,
-on the way out of the tree,
-this is reversed:
-the concrete-type callback is called,
-followed by the abstract-type callback.)
-
 In a “post” visit,
 when the received error is non-`nil`,
 a callback may decide whether and how to propagate the error to the caller.
@@ -60,6 +44,28 @@ if err != nil {
 ```
 
 unless it wants to ignore, decorate, or otherwise alter errors in its subtree.
+
+Nodes in a Go syntax tree have concrete types like `*ast.IfStmt` and `*ast.BinaryExpr`.
+Each concrete type has its own callback in `Visitor`:
+`Visitor.IfStmt`, `Visitor.BinaryExpr`, and so on.
+
+Most node types also implement one of these abstract interfaces:
+`ast.Expr`, `ast.Stmt`, `ast.Decl`, and `ast.Spec`.
+`Visitor` has callbacks for these types too.
+If the concrete-type callback for a given node is set,
+then that’s used when the node is visited.
+On the other hand,
+if it’s not set but the abstract-type callback is,
+then _that_ callback is used when the node is visited.
+
+For example,
+if your program sets `Visitor.BinaryExpr` and `Visitor.Expr`,
+then your `BinaryExpr` callback will be called for every `*ast.BinaryExpr` node you visit,
+and your `Expr` callback will be called for every other `ast.Expr` node you visit that’s not a `*ast.BinaryExpr`.
+
+All syntax node types implement the interface `ast.Node`.
+`Visitor.Node` is a callback for this catch-all type.
+If you define a `Node` callback then it is called for every node that doesn’t have a more-specific callback.
 
 ## Detailed example
 
@@ -80,19 +86,14 @@ Here is the sequence of events that will occur,
 assuming all the relevant callbacks in the `Visitor`, `v`, are non-`nil`.
 (Callbacks that are `nil` are simply skipped.)
 
-1. v.Node( _the IfStmt_, `Top`, 0, nil, true, nil )
-2. v.Stmt( _the IfStmt_, `Top`, 0, nil, true, nil )
-3. v.IfStmt( _the IfStmt_, `Top`, 0, nil, true, nil )
+1. v.IfStmt( _the IfStmt_, `Top`, 0, nil, true, nil )
 
-These are all visiting the same node, first as an abstract `Node`,
-then as a still-abstract (but more specific) `Stmt`,
-then as a concrete `*IfStmt`.
-
+This is the “pre” visit of the top `IfStmt` node.
 Because this node was reached directly via the `Walk` function,
 there is no information about its parent.
 So the `Which` value is `Top` and the stack is empty.
 
-4. v.Expr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], true, nil )
+2. v.BinaryExpr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], true, nil )
 
 Now the `IfStmt`’s condition subnode is visited,
 via its abstract `Expr` type.
@@ -104,55 +105,36 @@ tells which child of the `IfStmt` this is.
 
 Its parent, the `IfStmt` itself, is in the stack passed to `v.Expr`.
 
-Note that the type of `IfStmt.Cond` is `ast.Expr`,
-so the `v.Expr` callback is called directly,
-without first calling `v.Node`.
-
 Note also that the `IfStmt` type includes an optional `Init` sub-statement,
 but this `IfStmt` doesn’t use one,
 so that callback is skipped.
 
-5. v.BinaryExpr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], true, nil )
+3. v.Ident( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
 
-The same node is being visited, but now via its concrete type.
+The `x` part of `x==7` is visited.
 
-6. v.Expr( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
-7. v.Ident( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
-
-The `x` part of `x==7` is visited,
-first by its abstract `Expr` type and then by its concrete `*Ident` type.
-
-8. v.Ident( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
-9. v.Expr( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
+4. v.Ident( _the x node_, `BinaryExpr_X`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
 
 A `*Ident` has no children,
-so now it’s time for the “post” visits of the same node on the way out of this subtree.
+so now it’s time for the “post” visit of the same node on the way out of this subtree.
 
-The value of `err` in step 8 is whatever error was returned in step 7.
-The value of `err` in step 9 is whatever error was returned in step 8.
+The value of `err` in step 4 is whatever error was returned in step 3.
 
-10. v.Expr( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
-11. v.BasicLit( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
-12. v.BasicLit( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
-13. v.Expr( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
+5. v.BasicLit( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], true, nil )
+6. v.BasicLit( _the 7 node_, `BinaryExpr_Y`, 0, [ _the IfStmt_, _the x==7 node_ ], false, err )
 
 The `7` is pre-visited and post-visited.
 It’s a “basic literal.”
 
-14. v.BinaryExpr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], false, err )
-15. v.Expr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], false, err )
+7. v.BinaryExpr( _the x==7 node_, `IfStmt_Cond`, 0, [ _the IfStmt_ ], false, err )
 
 Continuing to unwind the call stack, the `x==7` node is now post-visited.
 
-16. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], true, nil )
+8. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], true, nil )
 
-The next child of the `IfStmt`, the body, is now visited.
+The next child of the `IfStmt`, the body, is now pre-visited.
 
-The `IfStmt` type specifies a concrete type for the `Body` field: `*ast.BlockStmt`.
-So the `Node` and `Stmt` callbacks are skipped.
-
-17. v.Stmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], true, nil )
-18. v.IncDecStmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], true, nil )
+9. v.IncDecStmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], true, nil )
 
 A `BlockStmt` contains a field,
 `List`,
@@ -164,20 +146,16 @@ The value of the `index` parameter, 0,
 which is irrelevant for child nodes that aren’t part of a slice,
 now tells us that this is the first element in the `BlockStmt`’s list.
 
-19. v.Expr( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], true, nil )
-20. v.Ident( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], true, nil )
-21. v.Ident( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], false, err )
-22. v.Expr( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], false, err )
+10. v.Ident( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], true, nil )
+11. v.Ident( _the y node_, `IncDecStmt_X`, 0, [ _the IfStmt_, _the { ... } node_, _the y++ node_ ], false, err )
 
 We descend into and then out of the sole child of the `y++` node.
 
-23. v.IncDecStmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], false, err )
-24. v.Stmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], true, nil )
+12. v.IncDecStmt( _the y++ node_, `BlockStmt_List`, 0, [ _the IfStmt_, _the { ... } node_ ], false, err )
 
 Post-visiting the `y++` node.
 
-25. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
-26. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
+13. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], true, nil )
 
 We now visit the second child of the `BlockStmt`:
 the `return z` node.
@@ -185,19 +163,14 @@ the `return z` node.
 The value of the `index` parameter, 1,
 tells us that this is the second element in the `BlockStmt`’s list.
 
-27. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
-28. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
-29. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
-30. v.Expr( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
+14. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], true, nil )
+15. v.Ident( _the z node_, `ReturnStmt_Results`, 0, [ _the IfStmt_, _the { ... } node_, _the return z node_ ], false, err )
 
 Descending into and out of the sole child of the `return z` node.
 
-31. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
-32. v.Stmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
-33. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], false, err )
-34. v.IfStmt( _the IfStmt_, `Top`, 0, nil, false, err )
-35. v.Stmt( _the IfStmt_, `Top`, 0, nil, false, err )
-36. v.Node( _the IfStmt_, `Top`, 0, nil, false, err )
+16. v.ReturnStmt( _the return z node_, `BlockStmt_List`, 1, [ _the IfStmt_, _the { ... } node_ ], false, err )
+17. v.BlockStmt( _the { ... } node_, `IfStmt_Body`, 0, [ _the IfStmt_ ], false, err )
+18. v.IfStmt( _the IfStmt_, `Top`, 0, nil, false, err )
 
 Post-visiting everything on the way out of the tree,
 all the way back to the top.

@@ -1,10 +1,7 @@
 // Package astw implements an enhanced walker/visitor for Go abstract syntax trees.
 package astw
 
-import (
-	"errors"
-	"go/ast"
-)
+import "go/ast"
 
 // Which describes a specific child of a specific go/ast Node type.
 type Which int
@@ -163,28 +160,6 @@ type StackItem struct {
 // after child nodes are visited
 // (the "post" visit).
 //
-// Some callbacks correspond to abstract types:
-// Node, Expr, Stmt, Decl, and Spec.
-// When walking the tree encounters a node of an abstract type,
-// the appropriate abstract-type callback is invoked,
-// and then the appropriate concrete-type callback is invoked on the same node.
-// Only then are the node's children visited.
-// For example,
-// when an Expr node is visited,
-// the Expr callback is invoked.
-// If the concrete type of that node turns out to be BinaryExpr (let's say),
-// then the BinaryExpr callback is also invoked.
-// On the way out of the tree, these calls are reversed:
-// first the BinaryExpr callback is invoked in "post" mode,
-// then the Expr callback.
-//
-// In the case of the abstract Node type,
-// the Node callback is invoked,
-// and then the node is resolved to its next-more-specific type,
-// which may be one of the other abstract types
-// (Expr, Stmt, Decl, and Spec).
-// In such cases up to three callbacks may be invoked for a given node.
-//
 // Each callback takes the following arguments:
 //   - the node (of the appropriate type);
 //   - a Which value, telling which child of the parent this node is;
@@ -193,10 +168,25 @@ type StackItem struct {
 //   - a boolean telling whether this is the pre visit (true) or the post visit (false);
 //   - the error value, if any, produced by visiting this node's children. This is always nil in a "pre" visit.
 //
+// Each node in a syntax tree has a concrete type like *ast.IfStmt or *ast.BinaryExpr.
+// Visitor contains a callback for each possible concrete type.
+// Many of these types also implement one of these abstract interfaces:
+// ast.Expr, ast.Stmt, ast.Decl, and ast.Spec.
+// Visitor additionally contains callbacks for these abstract types.
+// If the concrete-type callback for a given node is not set,
+// but the abstract-type callback is,
+// then that will be the callback for the node.
+//
+// All node types implement the abstract interface ast.Node.
+// Visitor contains a callback for that catch-all type too.
+// If it is defined,
+// it is used for all nodes that do not have a more-specific callback defined.
+//
 // Package nodes are handled specially.
 // Unique among go/ast Node types,
-// a Package node's children exist not in a slice but in a map,
-// mapping filenames to File nodes.
+// a Package node's children exist not as individual fields or in a slice,
+// but in a map,
+// mapping filenames to *ast.File nodes.
 // When File nodes are visited via a Package node,
 // they are visited in lexical filename order.
 // The index value passed to the File callback reflects this ordering.
@@ -204,7 +194,18 @@ type StackItem struct {
 // (i.e., the Which value is Package_Files),
 // the filename from the map can be found in the Visitor's Filename field.
 type Visitor struct {
+	// Node is the catch-all callback for any node that has no more-specific callback defined
+	// (i.e., a concrete-type callback, or one of Expr, Stmt, Decl, or Spec).
 	Node func(node ast.Node, which Which, index int, stack []StackItem, pre bool, err error) error
+
+	// Expr, Stmt, Decl, and Spec are the catch-all callbacks
+	// for any ast.Expr, ast.Stmt, ast.Decl, or ast.Spec node (respectively)
+	// that has no concrete-type callback defined.
+
+	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool, err error) error
+	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool, err error) error
+	Decl func(decl ast.Decl, which Which, index int, stack []StackItem, pre bool, err error) error
+	Spec func(spec ast.Spec, which Which, index int, stack []StackItem, pre bool, err error) error
 
 	// Filename is the name of the current file,
 	// when the File callback is invoked as a child of a Package node.
@@ -220,15 +221,7 @@ type Visitor struct {
 	FieldList    func(fieldList *ast.FieldList, which Which, index int, stack []StackItem, pre bool, err error) error
 	Field        func(field *ast.Field, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	// Expr, Stmt, Decl, and Spec are the intermediate interface types.
-	// All remaining concrete Node types implement one of these interfaces.
-
-	Expr func(expr ast.Expr, which Which, index int, stack []StackItem, pre bool, err error) error
-	Stmt func(stmt ast.Stmt, which Which, index int, stack []StackItem, pre bool, err error) error
-	Decl func(decl ast.Decl, which Which, index int, stack []StackItem, pre bool, err error) error
-	Spec func(spec ast.Spec, which Which, index int, stack []StackItem, pre bool, err error) error
-
-	// Exprs.
+	// Concrete-type callbacks for ast.Expr nodes.
 
 	BadExpr        func(badExpr *ast.BadExpr, which Which, index int, stack []StackItem, pre bool, err error) error
 	Ident          func(ident *ast.Ident, which Which, index int, stack []StackItem, pre bool, err error) error
@@ -253,7 +246,7 @@ type Visitor struct {
 	MapType        func(mapType *ast.MapType, which Which, index int, stack []StackItem, pre bool, err error) error
 	ChanType       func(chanType *ast.ChanType, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	// Stmts.
+	// Concrete-type callbacks for ast.Stmt nodes.
 
 	BadStmt        func(badStmt *ast.BadStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 	DeclStmt       func(declStmt *ast.DeclStmt, which Which, index int, stack []StackItem, pre bool, err error) error
@@ -277,13 +270,13 @@ type Visitor struct {
 	ForStmt        func(forStmt *ast.ForStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 	RangeStmt      func(rangeStmt *ast.RangeStmt, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	// Decls.
+	// Concrete-type callbacks for ast.Decl nodes.
 
 	BadDecl  func(badDecl *ast.BadDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 	GenDecl  func(genDecl *ast.GenDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 	FuncDecl func(funcDecl *ast.FuncDecl, which Which, index int, stack []StackItem, pre bool, err error) error
 
-	// Specs.
+	// Concrete-type callbacks for ast.Spec nodes.
 
 	ImportSpec func(importSpec *ast.ImportSpec, which Which, index int, stack []StackItem, pre bool, err error) error
 	ValueSpec  func(valueSpec *ast.ValueSpec, which Which, index int, stack []StackItem, pre bool, err error) error
@@ -292,11 +285,5 @@ type Visitor struct {
 
 // Walk walks the syntax tree rooted at n using the Visitor v.
 func Walk(v *Visitor, n ast.Node) error {
-	return v.visitNode(n, Top, 0, nil)
+	return v.visitAbstractNode(n, Top, 0, nil)
 }
-
-// ErrSkip is an error that a pre-visit callback can return to cause Walk to skip its children.
-// The post-visit of the same callback is also skipped.
-// Unlike other errors, it is not propagated up the call stack
-// (i.e., the post-visit of the parent callback will receive a value of nil for its err argument).
-var ErrSkip = errors.New("skip")
